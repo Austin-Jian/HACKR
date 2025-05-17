@@ -32,27 +32,44 @@ fun AndroidCompact4(navController: NavController? = null) {
     ) {
         Text(
             text = "Let’s get started!",
+            style = MaterialTheme.typography.displayLarge,
             color = Color(0xfff2f3d9),
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.offset(y = 100.dp)
+            modifier = Modifier.offset(y = 100.dp, x=40.dp)
         )
 
-        TextField(
-            value = name,
-            onValueChange = { name = it },
-            placeholder = { Text("Enter your name...") },
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color(0xffdc9e82).copy(alpha = 0.4f),
-                unfocusedContainerColor = Color(0xffdc9e82).copy(alpha = 0.4f)
-            ),
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier
-                .align(Alignment.Center)
-                .clip(RoundedCornerShape(10.dp))
-                .background(Color(0xfff2f3d9))
-                .padding(8.dp)
-                .fillMaxWidth(0.8f)
-        )
+                .fillMaxSize()
+        ) {
+            TextField(
+                value = name,
+                onValueChange = { name = it },
+                placeholder = { Text("Enter your name...", style = MaterialTheme.typography.bodyLarge, color = Color(0xffdc9e82)) },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color(0xfff2f3d9).copy(alpha = 0.4f),
+                    unfocusedContainerColor = Color(0xfff2f3d9).copy(alpha = 0.4f),
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+                ),
+                modifier = Modifier
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(Color(0xfff2f3d9))
+                    .padding(8.dp)
+                    .fillMaxWidth(0.8f)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp)) // Add spacing between TextField and Text
+
+            Text(
+                text = "What should others know you as?",
+                color = Color(0xfff2f3d9),
+                fontSize = 16.sp
+            )
+        }
+
 
         Button(
             onClick = { UserManager.userName = name
@@ -66,7 +83,7 @@ fun AndroidCompact4(navController: NavController? = null) {
                 .fillMaxWidth(0.8f)
                 .height(60.dp)
         ) {
-            Text("Next", color = Color(0xffdc9e82), fontSize = 20.sp)
+            Text("Next", style = MaterialTheme.typography.bodyLarge, color = Color(0xffdc9e82))
         }
 
     }

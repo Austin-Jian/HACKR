@@ -23,7 +23,7 @@ val interFontFamily = FontFamily(
     Font(R.font.inter_regular, FontWeight.Normal),
     Font(R.font.inter_medium, FontWeight.Medium),
     Font(R.font.inter_bold, FontWeight.Bold),
-    Font(R.font.inter_extrabold, FontWeight.ExtraBold)
+    Font(R.font.inter_light, FontWeight.ExtraBold)
 )
 
 // --- Typography ---
@@ -31,8 +31,13 @@ val interFontFamily = FontFamily(
 val customTypography = Typography(
     displayLarge = TextStyle(
         fontFamily = interFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 32.sp
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 80.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = interFontFamily,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 80.sp
     ),
     displayMedium = TextStyle(
         fontFamily = interFontFamily,
