@@ -6,5 +6,6 @@ object UserManager {
     var userName: String = ""
     var profilePhotoUri: Uri? = null
     var skills: List<String> = emptyList()          // User's own skills
-    var partnerSkills: List<String> = emptyList()   // Skills user wants in a partner
+    var partnerSkills: List<String> = emptyList()
+    var messages: MutableMap<String, MutableList<String>> = mutableMapOf()
 }
