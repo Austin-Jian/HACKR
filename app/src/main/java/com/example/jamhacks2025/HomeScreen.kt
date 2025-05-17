@@ -44,11 +44,12 @@ fun HomeScreen(navController: NavController) {
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "Hi Oliver,",
+                    text = "Hi ${UserManager.userName.ifBlank { "Guest" }},",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFFFFF0D5)
                 )
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Filters Section
