@@ -58,6 +58,7 @@ class MainActivity : ComponentActivity() {
                         val imageResId = backStackEntry.arguments?.getString("imageResId")?.toInt() ?: 0
                         IndividualDm(navController, profileName, imageResId)
                     }
+                    composable("skill_selection") { SkillSelectionScreen(navController) }
                 }
             }
         }

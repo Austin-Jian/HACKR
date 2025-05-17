@@ -53,12 +53,12 @@ fun HomeScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Filters Section
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf("backend", "backend", "abc").forEach { label ->
-                        AssistChip(label = label)
+                    UserManager.skills.forEach { skill ->
+                        AssistChip(label = skill)
                     }
                 }
+
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -170,6 +170,7 @@ fun SectionCard(title: String, count: String = "", content: @Composable () -> Un
             }
             Spacer(modifier = Modifier.height(16.dp))
             content()
+
         }
     }
 }

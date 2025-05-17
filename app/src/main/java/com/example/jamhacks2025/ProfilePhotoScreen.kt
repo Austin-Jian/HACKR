@@ -114,7 +114,7 @@ fun AndroidCompact2(modifier: Modifier = Modifier, navController: NavController?
         )
 
         Button(
-            onClick = { navController?.navigate("home") },
+            onClick = { navController?.navigate("skill_selection") },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xfff2f3d9)),
             shape = RoundedCornerShape(10.dp),
             modifier = Modifier.align(Alignment.TopStart).offset(x = 56.dp, y = 778.dp).size(300.dp, 80.dp)
