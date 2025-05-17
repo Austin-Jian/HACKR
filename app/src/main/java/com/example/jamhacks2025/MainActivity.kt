@@ -49,6 +49,7 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = navController, startDestination = "onboarding") {
                     composable("onboarding") { OnboardingScreen(navController) }
                     composable("profile_photo") { ProfilePhotoScreen(navController) }
+
                     composable("home") { HomeScreen(navController) }
                     composable("matches") {
                         MatchesScreen(navController)
