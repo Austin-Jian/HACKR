@@ -15,7 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,7 +30,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.jamhacks2025.ui.theme.JamHacks2025Theme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
-
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalDensity
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +73,7 @@ class MainActivity : ComponentActivity() {
 fun SwipeScreen(navController: NavController) {
     val profiles = remember { FakeChatBackend.matches.toMutableStateList() }
     var currentIndex by remember { mutableStateOf(0) }
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -82,7 +88,6 @@ fun SwipeScreen(navController: NavController) {
         }
     ) { innerPadding ->
         if (currentIndex >= profiles.size) {
-            // All profiles viewed
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -93,31 +98,49 @@ fun SwipeScreen(navController: NavController) {
             }
         } else {
             val profile = profiles[currentIndex]
+            val offsetX = remember { Animatable(0f) }
+            val screenWidth = with(LocalDensity.current) { 300.dp.toPx() } // Customize as needed
 
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
             ) {
-                // Profile Card
                 Surface(
                     shape = RoundedCornerShape(16.dp),
                     shadowElevation = 8.dp,
                     color = MaterialTheme.colorScheme.surface,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
+                        .fillMaxWidth(0.85f)
+                        .aspectRatio(0.75f)
+                        .offset { IntOffset(offsetX.value.toInt(), 0) }
+                        .rotate(offsetX.value / 60) // Slight rotation effect
                         .pointerInput(Unit) {
-                            detectHorizontalDragGestures { _, dragAmount ->
-                                if (dragAmount > 100) {
-                                    currentIndex++ // Swiped Right - Accept
-                                } else if (dragAmount < -100) {
-                                    currentIndex++ // Swiped Left - Reject
+                            detectHorizontalDragGestures(
+                                onDragEnd = {
+                                    scope.launch {
+                                        if (offsetX.value > screenWidth / 3) {
+                                            offsetX.animateTo(screenWidth, tween(300))
+                                            delay(200) // Delay before moving to next profile
+                                            offsetX.snapTo(0f)
+                                            currentIndex++
+                                        } else if (offsetX.value < -screenWidth / 3) {
+                                            offsetX.animateTo(-screenWidth, tween(300))
+                                            delay(200)
+                                            offsetX.snapTo(0f)
+                                            currentIndex++
+                                        } else {
+                                            offsetX.animateTo(0f, tween(300)) // Snap back if not enough swipe
+                                        }
+                                    }
+                                },
+                                onHorizontalDrag = { _, dragAmount ->
+                                    scope.launch {
+                                        offsetX.snapTo(offsetX.value + dragAmount)
+                                    }
                                 }
-                            }
+                            )
                         }
                 ) {
                     Column(
@@ -136,25 +159,12 @@ fun SwipeScreen(navController: NavController) {
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(text = profile.name, style = MaterialTheme.typography.headlineSmall)
-                    }
-                }
-
-                // Accept / Reject Buttons
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Button(
-                        onClick = { currentIndex++ }, // Reject
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE57373))
-                    ) {
-                        Text("Reject")
-                    }
-                    Button(
-                        onClick = { currentIndex++ }, // Accept
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF81C784))
-                    ) {
-                        Text("Accept")
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Swipe → Accept | Swipe ← Reject",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Gray
+                        )
                     }
                 }
             }
