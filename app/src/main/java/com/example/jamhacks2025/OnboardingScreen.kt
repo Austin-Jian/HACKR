@@ -34,7 +34,8 @@ fun AndroidCompact4(navController: NavController? = null) {
             text = "Let’s get started!",
             style = MaterialTheme.typography.displayLarge,
             color = Color(0xfff2f3d9),
-            modifier = Modifier.offset(y = 100.dp, x=40.dp)
+            fontSize = 50.sp,
+            modifier = Modifier.offset(y = 160.dp, x=40.dp)
         )
 
         Column(

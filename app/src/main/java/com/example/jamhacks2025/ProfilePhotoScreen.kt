@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
@@ -68,23 +69,23 @@ fun AndroidCompact2(modifier: Modifier = Modifier, navController: NavController?
 
     Box(
         modifier = modifier
-            .requiredWidth(412.dp)
-            .requiredHeight(917.dp)
+            .fillMaxSize()
             .background(Color(0xffc16e70))
+            .padding(24.dp)
     ) {
         Text(
             text = "Add a profile photo",
+            style = MaterialTheme.typography.displayLarge,
+            fontSize = 50.sp,
             color = Color(0xfff2f3d9),
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.TopStart).offset(x = 56.dp, y = 153.dp)
+            modifier = Modifier.offset(y = 100.dp, x=35.dp)
         )
 
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .offset(x = 86.dp, y = 306.dp)
+                .offset(x = 62.dp, y = 306.dp)
                 .size(240.dp)
                 .clip(CircleShape)
                 .background(Color(0xfff2f3d9))
@@ -114,12 +115,18 @@ fun AndroidCompact2(modifier: Modifier = Modifier, navController: NavController?
         )
 
         Button(
-            onClick = { navController?.navigate("skill_selection") },
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xfff2f3d9)),
+            onClick = {
+                navController?.navigate("skill_selection")
+            },
             shape = RoundedCornerShape(10.dp),
-            modifier = Modifier.align(Alignment.TopStart).offset(x = 56.dp, y = 778.dp).size(300.dp, 80.dp)
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xfff2f3d9)),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 50.dp)
+                .fillMaxWidth(0.8f)
+                .height(60.dp)
         ) {
-            Text("Next", color = Color(0xffdc9e82), fontSize = 24.sp, fontWeight = FontWeight.Medium)
+            Text("Next", style = MaterialTheme.typography.bodyLarge, color = Color(0xffdc9e82))
         }
     }
 }
