@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalDensity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
@@ -175,11 +176,13 @@ fun SwipeScreen(navController: NavController) {
                         Text(text = profile.name, style = MaterialTheme.typography.headlineSmall)
                         Spacer(modifier = Modifier.height(8.dp))
 
+                        // If they swiped us, ts what we see
                         if (swipeStatus[profile.name] == true) {
                             Text(
                                 text = "${profile.name} is interested in joining your team!",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = Color.Green
+                                color = Color.Green,
+                                fontSize = 12.sp
                             )
                         }
 
@@ -187,7 +190,8 @@ fun SwipeScreen(navController: NavController) {
                         Text(
                             text = "Swipe → Accept | Swipe ← Reject",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
+                            color = Color.Gray,
+                            fontSize = 12.sp
                         )
                     }
                 }
