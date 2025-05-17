@@ -47,7 +47,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             JamHacks2025Theme {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "onboarding") {
+                NavHost(navController = navController, startDestination = "launch") {
+                    composable("launch") { LaunchScreen(navController) }
                     composable("onboarding") { OnboardingScreen(navController) }
                     composable("profile_photo") { ProfilePhotoScreen(navController) }
                     composable("home") { HomeScreen(navController) }
