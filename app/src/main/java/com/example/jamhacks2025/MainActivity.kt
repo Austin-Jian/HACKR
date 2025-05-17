@@ -49,25 +49,20 @@ class MainActivity : ComponentActivity() {
                 NavHost(navController = navController, startDestination = "onboarding") {
                     composable("onboarding") { OnboardingScreen(navController) }
                     composable("profile_photo") { ProfilePhotoScreen(navController) }
-
                     composable("home") { HomeScreen(navController) }
-                    composable("matches") {
-                        MatchesScreen(navController)
-                    }
-                    composable("swipe") {
-                        SwipeScreen(navController)
-                    }
-                    composable("chat/{matchId}") { backStackEntry ->
-                        val matchId = backStackEntry.arguments?.getString("matchId") ?: ""
-                        ChatScreen(navController, matchId)
+                    composable("swipe") { SwipeScreen(navController) }
+                    composable("chat_list") { ChatListScreen(navController) }
+                    // ✅ New Chat List Screen
+                    composable("chat_dm/{profileName}/{imageResId}") { backStackEntry ->
+                        val profileName = backStackEntry.arguments?.getString("profileName") ?: ""
+                        val imageResId = backStackEntry.arguments?.getString("imageResId")?.toInt() ?: 0
+                        IndividualDm(navController, profileName, imageResId)
                     }
                 }
-
             }
         }
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SwipeScreen(navController: NavController) {

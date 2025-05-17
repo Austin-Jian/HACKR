@@ -111,7 +111,7 @@ fun HomeScreen(navController: NavController) {
 
             // Resume a Chat Button
             Button(
-                onClick = { navController.navigate("matches") },
+                onClick = { navController.navigate("chat_list") },
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF5F5DC)),
                 modifier = Modifier.fillMaxWidth().height(50.dp)
