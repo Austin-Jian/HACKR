@@ -66,8 +66,9 @@ fun HomeScreen(navController: NavController) {
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.offset(x = 36.dp)
                 ) {
+
                     UserManager.skills.forEach { skill ->
-                        StaticSkillChip(label = skill)
+                        StaticSkillChip(color1 = Color(0xFFFFF0D5), label = skill)
                     }
                 }
 
@@ -93,18 +94,25 @@ fun HomeScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 SectionCard(title = "Keep Looking", modifier = Modifier.padding(start = 32.dp, end = 32.dp)) {
-                    FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        UserManager.partnerSkills.forEach { skill ->
-                            StaticSkillChip(label = skill)
+                    Box { // Use Box as the parent layout
+
+                        // FlowRow with skills
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.padding(bottom = 60.dp) // Add bottom padding to leave space for the button
+                        ) {
+                            UserManager.partnerSkills.forEach { skill ->
+                                StaticSkillChip(color1 = Color(0xFFD9A57C), label = skill)
+                            }
                         }
 
+                        // Button positioned at the bottom-right corner
                         IconButton(
                             onClick = { navController.navigate("swipe") },
                             modifier = Modifier
                                 .size(40.dp)
+                                .align(Alignment.BottomEnd)
                                 .background(Color(0xFF151E3F), CircleShape)
                         ) {
                             Icon(
@@ -142,18 +150,18 @@ fun HomeScreen(navController: NavController) {
 }
 
 @Composable
-fun StaticSkillChip(label: String) {
+fun StaticSkillChip(color1: Color, label: String) {
     Surface(
         shape = RoundedCornerShape(50),
         color = Color.Transparent,
-        border = BorderStroke(1.dp, Color(0xFFD9A57C)),
+        border = BorderStroke(1.dp, color1),
         modifier = Modifier.height(32.dp)
     ) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.padding(horizontal = 12.dp)
         ) {
-            Text(text = label, color = Color(0xFFD9A57C), fontSize = 12.sp)
+            Text(text = label, color = color1, fontSize = 12.sp)
         }
     }
 }
