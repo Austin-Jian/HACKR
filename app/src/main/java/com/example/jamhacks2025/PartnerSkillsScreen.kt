@@ -60,7 +60,7 @@ fun PartnerSkillsScreen(navController: NavController) {
             }
         }
         Button(
-            onClick = { UserManager.skills = selectedCategories.toList()
+            onClick = {
                 navController.navigate("home")
             },
             shape = RoundedCornerShape(10.dp),
