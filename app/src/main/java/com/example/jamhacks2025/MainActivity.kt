@@ -59,6 +59,8 @@ class MainActivity : ComponentActivity() {
                         IndividualDm(navController, profileName, imageResId)
                     }
                     composable("skill_selection") { SkillSelectionScreen(navController) }
+                    composable("partner_skills") { PartnerSkillsScreen(navController) }
+
                 }
             }
         }
