@@ -44,6 +44,7 @@ android {
 dependencies {
     // Force Compose BOM to set correct versions across all Compose libraries
     implementation(platform("androidx.compose:compose-bom:2023.10.01"))
+    implementation("androidx.compose.foundation:foundation:1.5.0") // or latest
 
     // Compose dependencies (these now use the BOM version automatically)
     implementation("androidx.activity:activity-compose")

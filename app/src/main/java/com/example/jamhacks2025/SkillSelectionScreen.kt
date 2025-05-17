@@ -1,6 +1,7 @@
 package com.example.jamhacks2025
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -10,11 +11,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Arrangement
+
+
 import androidx.navigation.NavController
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SkillSelectionScreen(navController: NavController) {
-    val categories = listOf("frontend", "backend", "hardware", "software", "design", "python", "C#")
+    val categories = listOf("frontend", "backend", "hardware", "software", "C#", "design", "python")
     val selectedCategories = remember { mutableStateListOf<String>() }
 
     Column(
@@ -26,48 +33,47 @@ fun SkillSelectionScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Choose Your Skills",
-            fontSize = 28.sp,
-            color = Color.White,
-            modifier = Modifier.padding(top = 40.dp)
+            text = "Choose \nyour skills",
+            style = MaterialTheme.typography.displayLarge,
+            color = Color(0xfff2f3d9),
+            fontSize = 50.sp,
+            modifier = Modifier.offset(y = 200.dp, x = -15.dp)
         )
 
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            categories.chunked(2).forEach { rowItems ->
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    rowItems.forEach { category ->
-                        SkillChip(
-                            text = category,
-                            isSelected = selectedCategories.contains(category),
-                            onClick = {
-                                if (selectedCategories.contains(category)) {
-                                    selectedCategories.remove(category)
-                                } else {
-                                    selectedCategories.add(category)
-                                }
-                            },
-                            modifier = Modifier.weight(1f)
-                        )
+        FlowRow(
+            modifier = Modifier.padding(start = 32.dp, end = 32.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            categories.forEach { category ->
+                SkillChip(
+                    text = category,
+                    isSelected = selectedCategories.contains(category),
+                    onClick = {
+                        if (selectedCategories.contains(category)) {
+                            selectedCategories.remove(category)
+                        } else {
+                            selectedCategories.add(category)
+                        }
                     }
-
-                }
+                )
             }
         }
-
         Button(
-            onClick = {
-                UserManager.skills = selectedCategories.toList()
+            onClick = { UserManager.skills = selectedCategories.toList()
                 navController.navigate("partner_skills")
             },
+            shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xfff2f3d9)),
-            shape = RoundedCornerShape(8.dp),
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 32.dp)
+                //.align(Alignment.BottomCenter)
+                .padding(bottom = 50.dp)
+                .fillMaxWidth(0.8f)
                 .height(60.dp)
         ) {
-            Text("I'm done", color = Color(0xffdc9e82), fontSize = 20.sp)
+            Text("I'm done", style = MaterialTheme.typography.bodyLarge, color = Color(0xffdc9e82))
         }
+
     }
 }
 
@@ -76,19 +82,22 @@ fun SkillChip(
     text: String,
     isSelected: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier // Add this
+    modifier: Modifier = Modifier
 ) {
     val backgroundColor = if (isSelected) Color(0xfff2f3d9) else Color.Transparent
     val textColor = if (isSelected) Color(0xffdc9e82) else Color(0xfff2f3d9)
+    val borderColor = Color(0xfff2f3d9)
 
     OutlinedButton(
         onClick = onClick,
         shape = RoundedCornerShape(50),
-        colors = ButtonDefaults.buttonColors(containerColor = backgroundColor),
-        modifier = modifier // Use passed modifier here
-            .height(50.dp)
+        border = BorderStroke(1.dp, borderColor),
+        colors = ButtonDefaults.outlinedButtonColors(containerColor = backgroundColor),
+        modifier = modifier
+            .wrapContentWidth()
     ) {
         Text(text, color = textColor)
     }
 }
+
 
