@@ -27,11 +27,27 @@ import androidx.compose.material3.TopAppBar
 data class ChatProfile(val name: String, val imageResId: Int)
 
 val sampleProfiles = listOf(
-    ChatProfile("John Doe", R.drawable.ellipse3),
-    ChatProfile("Anne Smith", R.drawable.ellipse4),
-    ChatProfile("Charlie Brown", R.drawable.ellipse3),
-    ChatProfile("Dana Lee", R.drawable.ellipse4)
+    ChatProfile("John Doe", R.drawable.p1),
+    ChatProfile("Anne Smith", R.drawable.p2),
+    ChatProfile("Charlie Brown", R.drawable.p3),
+    ChatProfile("Dana Lee", R.drawable.p4),
+    ChatProfile("Ethan Clark", R.drawable.p5),
+    ChatProfile("Fiona Gallagher", R.drawable.p6),
+    ChatProfile("George King", R.drawable.p7),
+    ChatProfile("Hannah Miles", R.drawable.p8),
+    ChatProfile("Ian Wright", R.drawable.p9),
+    ChatProfile("Julia Roberts", R.drawable.p10),
+    ChatProfile("Kevin Nguyen", R.drawable.p11),
+    ChatProfile("Luna Park", R.drawable.p12),
+    ChatProfile("Mike Jordan", R.drawable.p13),
+    ChatProfile("Nina Patel", R.drawable.p14),
+    ChatProfile("Oscar Wilde", R.drawable.p15),
+    ChatProfile("Paula Adams", R.drawable.p16),
+    ChatProfile("Quinn Taylor", R.drawable.p17),
+    ChatProfile("Sam Carter", R.drawable.p19),
+    ChatProfile("Tina Chen", R.drawable.p20)
 )
+
 
 @Composable
 fun ChatListScreen(navController: NavController, modifier: Modifier = Modifier) {
