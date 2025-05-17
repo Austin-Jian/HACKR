@@ -71,8 +71,11 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SwipeScreen(navController: NavController) {
-    val profiles = remember { FakeChatBackend.matches.toMutableStateList() }
-    var currentIndex by remember { mutableStateOf(0) }
+    val currentUserId = "user_1"
+    val alreadySwiped = remember { FakeChatBackend.getAlreadySwiped(currentUserId) }
+    val profiles = remember {
+        FakeUserDatabase.users.filterNot { it.id in alreadySwiped }.toMutableStateList()
+    }
     val scope = rememberCoroutineScope()
 
     Scaffold(
@@ -87,7 +90,7 @@ fun SwipeScreen(navController: NavController) {
             )
         }
     ) { innerPadding ->
-        if (currentIndex >= profiles.size) {
+        if (profiles.isEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -97,9 +100,9 @@ fun SwipeScreen(navController: NavController) {
                 Text("No more profiles!", style = MaterialTheme.typography.titleLarge)
             }
         } else {
-            val profile = profiles[currentIndex]
-            val offsetX = remember { Animatable(0f) }
-            val screenWidth = with(LocalDensity.current) { 300.dp.toPx() } // Customize as needed
+            val profile = profiles.first()
+            val offsetX = remember(profile) { Animatable(0f) }  // Reset offset for each new profile
+            val screenWidth = with(LocalDensity.current) { 300.dp.toPx() }
 
             Box(
                 modifier = Modifier
@@ -115,30 +118,34 @@ fun SwipeScreen(navController: NavController) {
                         .fillMaxWidth(0.85f)
                         .aspectRatio(0.75f)
                         .offset { IntOffset(offsetX.value.toInt(), 0) }
-                        .rotate(offsetX.value / 60) // Slight rotation effect
-                        .pointerInput(Unit) {
+                        .rotate(offsetX.value / 60)
+                        .pointerInput(profile) {  // Reset gesture detection for each new profile
                             detectHorizontalDragGestures(
                                 onDragEnd = {
                                     scope.launch {
-                                        if (offsetX.value > screenWidth / 3) {
-                                            offsetX.animateTo(screenWidth, tween(300))
-                                            delay(200) // Delay before moving to next profile
-                                            offsetX.snapTo(0f)
-                                            currentIndex++
-                                        } else if (offsetX.value < -screenWidth / 3) {
-                                            offsetX.animateTo(-screenWidth, tween(300))
-                                            delay(200)
-                                            offsetX.snapTo(0f)
-                                            currentIndex++
-                                        } else {
-                                            offsetX.animateTo(0f, tween(300)) // Snap back if not enough swipe
+                                        when {
+                                            offsetX.value > screenWidth / 3 -> {
+                                                offsetX.animateTo(screenWidth, tween(300))
+                                                delay(200)
+                                                FakeChatBackend.swipeRight(currentUserId, profile.id)
+                                                alreadySwiped.add(profile.id)
+                                                profiles.remove(profile)
+                                            }
+                                            offsetX.value < -screenWidth / 3 -> {
+                                                offsetX.animateTo(-screenWidth, tween(300))
+                                                delay(200)
+                                                FakeChatBackend.swipeLeft(currentUserId, profile.id)
+                                                alreadySwiped.add(profile.id)
+                                                profiles.remove(profile)
+                                            }
+                                            else -> {
+                                                offsetX.animateTo(0f, tween(300))
+                                            }
                                         }
                                     }
                                 },
                                 onHorizontalDrag = { _, dragAmount ->
-                                    scope.launch {
-                                        offsetX.snapTo(offsetX.value + dragAmount)
-                                    }
+                                    scope.launch { offsetX.snapTo(offsetX.value + dragAmount) }
                                 }
                             )
                         }
@@ -160,11 +167,23 @@ fun SwipeScreen(navController: NavController) {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(text = profile.name, style = MaterialTheme.typography.headlineSmall)
                         Spacer(modifier = Modifier.height(8.dp))
+                        val hasSwipedRightOnYou = FakeChatBackend.getAlreadySwiped(profile.id).contains(currentUserId)
+
+                        if (hasSwipedRightOnYou) {
+                            Text(
+                                text = "${profile.name} is interested in joining your team",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.Green
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
                         Text(
                             text = "Swipe → Accept | Swipe ← Reject",
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.Gray
                         )
+
                     }
                 }
             }
@@ -176,7 +195,8 @@ fun SwipeScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MatchesScreen(navController: NavController) {
-    val matches = FakeChatBackend.matches
+    val currentUserId = "user_1" // Hardcoded for now, or dynamically retrieved later
+    val matches = FakeChatBackend.getMatchesForUser(currentUserId)
 
     Scaffold(
         topBar = { TopAppBar(
