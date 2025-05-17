@@ -69,11 +69,17 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+val permanentlySwipedProfiles = mutableSetOf<String>()
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SwipeScreen(navController: NavController) {
-    val profiles = remember { sampleProfiles.toMutableStateList() }
     val scope = rememberCoroutineScope()
+
+    // Always filter profiles based on the permanent swiped set
+    val profiles = remember {
+        sampleProfiles.filter { it.name !in permanentlySwipedProfiles }.toMutableStateList()
+    }
 
     Scaffold(
         topBar = {
@@ -123,12 +129,20 @@ fun SwipeScreen(navController: NavController) {
                                             offsetX.value > screenWidth / 3 -> {
                                                 offsetX.animateTo(screenWidth, tween(300))
                                                 delay(200)
+
                                                 userSwipes.add(profile.name)
+                                                permanentlySwipedProfiles.add(profile.name) // 👈 Prevent profile from returning
                                                 profiles.remove(profile)
+
+                                                if (swipeStatus[profile.name] == true) {
+                                                    navController.navigate("chat_dm/${profile.name}/${profile.imageResId}")
+                                                }
                                             }
                                             offsetX.value < -screenWidth / 3 -> {
                                                 offsetX.animateTo(-screenWidth, tween(300))
                                                 delay(200)
+
+                                                permanentlySwipedProfiles.add(profile.name) // 👈 Add to permanent removal list
                                                 profiles.remove(profile)
                                             }
                                             else -> {
@@ -155,9 +169,7 @@ fun SwipeScreen(navController: NavController) {
                         Image(
                             painter = painterResource(id = profile.imageResId),
                             contentDescription = "Profile Picture",
-                            modifier = Modifier
-                                .size(150.dp)
-                                .clip(CircleShape)
+                            modifier = Modifier.size(150.dp).clip(CircleShape)
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(text = profile.name, style = MaterialTheme.typography.headlineSmall)
@@ -183,6 +195,7 @@ fun SwipeScreen(navController: NavController) {
         }
     }
 }
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
