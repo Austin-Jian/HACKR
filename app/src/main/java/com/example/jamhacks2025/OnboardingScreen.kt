@@ -55,9 +55,8 @@ fun AndroidCompact4(navController: NavController? = null) {
         )
 
         Button(
-            onClick = {
-                UserManager.userName = name
-                navController?.navigate("home")
+            onClick = { UserManager.userName = name
+                navController?.navigate("profile_photo")
             },
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xfff2f3d9)),
@@ -78,3 +77,8 @@ fun AndroidCompact4(navController: NavController? = null) {
 fun OnboardingPreview() {
     AndroidCompact4()
 }
+@Composable
+fun OnboardingScreen(navController: NavController) {
+    AndroidCompact4(navController)
+}
+

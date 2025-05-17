@@ -1,10 +1,11 @@
 package com.example.jamhacks2025
+
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-
 import androidx.compose.material3.ExperimentalMaterial3Api
 import android.os.Bundle
+import com.example.jamhacks2025.ProfilePhotoScreen
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -29,6 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.jamhacks2025.ui.theme.JamHacks2025Theme
 
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,12 +39,9 @@ class MainActivity : ComponentActivity() {
             JamHacks2025Theme {
                 val navController = rememberNavController()
                 NavHost(navController = navController, startDestination = "onboarding") {
-                    composable("onboarding") {
-                        AndroidCompact4(navController)
-                    }
-                    composable("home") {
-                        HomeScreen(navController)
-                    }
+                    composable("onboarding") { OnboardingScreen(navController) }
+                    composable("profile_photo") { ProfilePhotoScreen(navController) }
+                    composable("home") { HomeScreen(navController) }
                     composable("matches") {
                         MatchesScreen(navController)
                     }
