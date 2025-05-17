@@ -2,6 +2,7 @@ package com.example.jamhacks2025
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -40,26 +41,25 @@ fun ChatListScreen(navController: NavController, modifier: Modifier = Modifier) 
             .background(color = Color(0xffdc9e82))
     ) {
         Text(
-            text = "hackr",
-            color = Color(0xfff2f3d9),
-            style = TextStyle(fontSize = 20.sp),
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 52.dp, top = 35.dp)
+            text = "HACKR",
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp,
+            color = Color(0xFFFFF0D5),
+            modifier = Modifier.offset(x = 52.dp, y = 56.dp)
         )
         Text(
             text = "Your Chats",
-            color = Color(0xff151e3f),
-            style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 51.dp, top = 92.dp)
+            fontSize = 50.sp,
+            style = MaterialTheme.typography.displayLarge,
+            color = Color(0xFF151E3F),
+            modifier = Modifier.offset(x = 52.dp, y = 120.dp)
         )
 
         LazyColumn(
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(top = 180.dp, start = 20.dp, end = 20.dp)
+                .padding(top = 220.dp, start = 52.dp, end = 52.dp)
         ) {
             val matches = sampleProfiles.filter { profile ->
                 swipeStatus[profile.name] == true && userSwipes.contains(profile.name)
@@ -88,7 +88,8 @@ fun ChatProfileItem(profile: ChatProfile, navController: NavController) {
             contentDescription = "Profile Picture",
             modifier = Modifier
                 .size(100.dp)
-                .clip(CircleShape)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.width(24.dp))
         Text(
