@@ -36,14 +36,22 @@ class MainActivity : ComponentActivity() {
         setContent {
             JamHacks2025Theme {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "home") {
-                    composable("home") { HomeScreen(navController) }
-                    composable("matches") { MatchesScreen(navController) }
+                NavHost(navController = navController, startDestination = "onboarding") {
+                    composable("onboarding") {
+                        AndroidCompact4(navController)
+                    }
+                    composable("home") {
+                        HomeScreen(navController)
+                    }
+                    composable("matches") {
+                        MatchesScreen(navController)
+                    }
                     composable("chat/{matchId}") { backStackEntry ->
                         val matchId = backStackEntry.arguments?.getString("matchId") ?: ""
                         ChatScreen(navController, matchId)
                     }
                 }
+
             }
         }
     }
