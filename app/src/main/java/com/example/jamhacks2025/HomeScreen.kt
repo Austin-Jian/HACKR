@@ -63,7 +63,7 @@ fun HomeScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    UserManager.skills.forEach { skill ->
+                        UserManager.skills.forEach { skill ->
                         AssistChip(label = skill)
                     }
                 }

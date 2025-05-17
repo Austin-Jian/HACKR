@@ -1,19 +1,20 @@
 package com.example.jamhacks2025
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -33,21 +34,35 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
             .background(Color(0xffdc9e82))
             .padding(16.dp)
     ) {
-        // Top Bar
-        Text(
-            text = "hackr",
-            color = Color(0xfff2f3d9),
-            style = TextStyle(fontSize = 20.sp),
-            modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Chat with $profileName",
-            color = Color(0xff151e3f),
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
+        // Top Bar with Back Arrow
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            IconButton(
+                onClick = { navController.popBackStack() },
+                modifier = Modifier.size(40.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.arrow),
+                    contentDescription = "Back",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .rotate(180f),
+                    colorFilter = ColorFilter.tint(Color(0xff151e3f))
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = "Chat with $profileName",
+                color = Color(0xff151e3f),
+                style = MaterialTheme.typography.headlineSmall
+            )
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
         Image(
             painter = painterResource(id = imageResId),
             contentDescription = "Profile Photo",
@@ -56,7 +71,9 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
                 .size(120.dp)
                 .clip(CircleShape)
         )
+
         Spacer(modifier = Modifier.height(16.dp))
+
         Text(
             text = "$profileName seems to be a great fit for your team!",
             color = Color(0xfff2f3d9),
@@ -65,7 +82,7 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
         // Messages List
         LazyColumn(
@@ -83,33 +100,52 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
         // Input Row
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp)
+                .background(Color(0xfff2f3d9), RoundedCornerShape(50.dp))
+                .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             TextField(
                 value = messageText,
                 onValueChange = { messageText = it },
-                placeholder = { Text("Type a message...") },
+                placeholder = { Text("Type a message...", color = Color(0xffdc9e82)) },
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color(0xfff2f3d9),
-                    unfocusedContainerColor = Color(0xfff2f3d9)
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,   // Removes underline when focused
+                    unfocusedIndicatorColor = Color.Transparent, // Removes underline when unfocused
+                    disabledIndicatorColor = Color.Transparent   // Removes underline when disabled
                 ),
                 modifier = Modifier
                     .weight(1f)
-                    .height(60.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .height(56.dp),
+                textStyle = TextStyle(color = Color(0xffdc9e82)),
+                maxLines = 1
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(
+
+
+            IconButton(
                 onClick = {
                     if (messageText.isNotBlank()) {
                         messages.add(messageText)
                         messageText = ""
                     }
                 },
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xfff2f3d9))
+                modifier = Modifier
+                    .offset(x = (-16).dp)
+                    .size(48.dp)
+                    .background(Color(0xffc16e70), CircleShape)
             ) {
-                Text("Send", color = Color(0xffdc9e82))
+                Image(
+                    painter = painterResource(id = R.drawable.vector),
+                    contentDescription = "Send",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .rotate(0f), // Rotates the arrow by 90 degrees to point upward
+                    colorFilter = ColorFilter.tint(Color(0xfff2f3d9)) // Optional: Tint the arrow color
+                )
             }
         }
     }
@@ -121,7 +157,7 @@ fun MessageBubble(content: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
-        horizontalArrangement = Arrangement.End // Assume "Me" is always the sender for now
+        horizontalArrangement = Arrangement.End
     ) {
         Surface(
             color = Color(0xfff2f3d9),
