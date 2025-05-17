@@ -69,11 +69,7 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SwipeScreen(navController: NavController) {
-    val currentUserId = "user_1"
-    val alreadySwiped = remember { FakeChatBackend.getAlreadySwiped(currentUserId) }
-    val profiles = remember {
-        FakeUserDatabase.users.filterNot { it.id in alreadySwiped }.toMutableStateList()
-    }
+    val profiles = remember { sampleProfiles.toMutableStateList() }
     val scope = rememberCoroutineScope()
 
     Scaffold(
@@ -99,7 +95,7 @@ fun SwipeScreen(navController: NavController) {
             }
         } else {
             val profile = profiles.first()
-            val offsetX = remember(profile) { Animatable(0f) }  // Reset offset for each new profile
+            val offsetX = remember(profile) { Animatable(0f) }
             val screenWidth = with(LocalDensity.current) { 300.dp.toPx() }
 
             Box(
@@ -117,7 +113,7 @@ fun SwipeScreen(navController: NavController) {
                         .aspectRatio(0.75f)
                         .offset { IntOffset(offsetX.value.toInt(), 0) }
                         .rotate(offsetX.value / 60)
-                        .pointerInput(profile) {  // Reset gesture detection for each new profile
+                        .pointerInput(profile) {
                             detectHorizontalDragGestures(
                                 onDragEnd = {
                                     scope.launch {
@@ -125,15 +121,11 @@ fun SwipeScreen(navController: NavController) {
                                             offsetX.value > screenWidth / 3 -> {
                                                 offsetX.animateTo(screenWidth, tween(300))
                                                 delay(200)
-                                                FakeChatBackend.swipeRight(currentUserId, profile.id)
-                                                alreadySwiped.add(profile.id)
                                                 profiles.remove(profile)
                                             }
                                             offsetX.value < -screenWidth / 3 -> {
                                                 offsetX.animateTo(-screenWidth, tween(300))
                                                 delay(200)
-                                                FakeChatBackend.swipeLeft(currentUserId, profile.id)
-                                                alreadySwiped.add(profile.id)
                                                 profiles.remove(profile)
                                             }
                                             else -> {
@@ -156,7 +148,7 @@ fun SwipeScreen(navController: NavController) {
                             .padding(16.dp)
                     ) {
                         Image(
-                            painter = painterResource(id = profile.profileImageRes),
+                            painter = painterResource(id = profile.imageResId),
                             contentDescription = "Profile Picture",
                             modifier = Modifier
                                 .size(150.dp)
@@ -165,23 +157,11 @@ fun SwipeScreen(navController: NavController) {
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(text = profile.name, style = MaterialTheme.typography.headlineSmall)
                         Spacer(modifier = Modifier.height(8.dp))
-                        val hasSwipedRightOnYou = FakeChatBackend.getAlreadySwiped(profile.id).contains(currentUserId)
-
-                        if (hasSwipedRightOnYou) {
-                            Text(
-                                text = "${profile.name} is interested in joining your team",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.Green
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                        }
-
                         Text(
                             text = "Swipe → Accept | Swipe ← Reject",
                             style = MaterialTheme.typography.bodyMedium,
                             color = Color.Gray
                         )
-
                     }
                 }
             }
