@@ -93,18 +93,19 @@ fun HomeScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                SectionCard(title = "Keep Looking", modifier = Modifier.padding(start = 32.dp, end = 32.dp)) {
-                    Box { // Use Box as the parent layout
+                SectionCard(title = "Find a Hacker", modifier = Modifier.padding(start = 32.dp, end = 32.dp)) {
+                    // Use Box as the parent layout
 
                         // FlowRow with skills
                         FlowRow(
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp),
-                            modifier = Modifier.padding(bottom = 60.dp) // Add bottom padding to leave space for the button
+                            modifier = Modifier.padding(bottom = 10.dp) // Add bottom padding to leave space for the button
                         ) {
                             UserManager.partnerSkills.forEach { skill ->
                                 StaticSkillChip(color1 = Color(0xFFD9A57C), label = skill)
                             }
+
                         }
 
                         // Button positioned at the bottom-right corner
@@ -112,16 +113,16 @@ fun HomeScreen(navController: NavController) {
                             onClick = { navController.navigate("swipe") },
                             modifier = Modifier
                                 .size(40.dp)
-                                .align(Alignment.BottomEnd)
+                                .align(Alignment.End)
                                 .background(Color(0xFF151E3F), CircleShape)
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.ArrowForward,
-                                contentDescription = "Keep Matching",
+                                contentDescription = "Find a Hacker",
                                 tint = Color(0xFFF5F5DC)
                             )
                         }
-                    }
+
                 }
             }
 

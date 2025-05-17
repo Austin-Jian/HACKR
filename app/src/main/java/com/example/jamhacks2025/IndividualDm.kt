@@ -15,6 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -60,7 +61,7 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
                 text = "Chat with $profileName",
                 color = Color(0xff151e3f),
                 style = MaterialTheme.typography.displayLarge,
-                fontSize = 28.sp,
+                fontSize = 24.sp,
                 modifier = Modifier.offset(x = 20.dp, y=60.dp)
             )
         }
@@ -73,7 +74,8 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .size(120.dp)
-                .clip(CircleShape)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop
         )
 
         Spacer(modifier = Modifier.height(16.dp))
