@@ -58,7 +58,9 @@ fun HomeScreen(navController: NavController) {
                     fontSize = 50.sp,
                     style = MaterialTheme.typography.displayLarge,
                     color = Color(0xFF151E3F),
-                    modifier = Modifier.offset(x = 36.dp, y = 60.dp)
+                    modifier = Modifier
+                        .offset(x = 36.dp, y = 60.dp)
+                        .padding(end = 36.dp)
                 )
                 Spacer(modifier = Modifier.height(80.dp))
 
