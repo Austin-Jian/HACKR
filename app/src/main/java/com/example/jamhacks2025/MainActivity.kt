@@ -1,4 +1,8 @@
 package com.example.jamhacks2025
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+
 import androidx.compose.material3.ExperimentalMaterial3Api
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -32,10 +36,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             JamHacks2025Theme {
                 val navController = rememberNavController()
-                NavHost(navController, startDestination = "matches") {
-                    composable("matches") {
-                        MatchesScreen(navController)
-                    }
+                NavHost(navController = navController, startDestination = "home") {
+                    composable("home") { HomeScreen(navController) }
+                    composable("matches") { MatchesScreen(navController) }
                     composable("chat/{matchId}") { backStackEntry ->
                         val matchId = backStackEntry.arguments?.getString("matchId") ?: ""
                         ChatScreen(navController, matchId)
@@ -52,8 +55,19 @@ fun MatchesScreen(navController: NavController) {
     val matches = FakeChatBackend.matches
 
     Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("Your Matches") })
+        topBar = { TopAppBar(
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Swipe Hint",
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Your Matches")
+                }
+            }
+        )
         }
     ) { innerPadding ->
         LazyColumn(
@@ -61,6 +75,13 @@ fun MatchesScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp)
+                .pointerInput(Unit) {
+                    detectHorizontalDragGestures { _, dragAmount ->
+                        if (dragAmount > 50) {
+                            navController.navigate("home")
+                        }
+                    }
+                }
         ) {
             items(matches) { match ->
                 Row(
@@ -68,9 +89,7 @@ fun MatchesScreen(navController: NavController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
-                        .clickable {
-                            navController.navigate("chat/${match.id}")
-                        }
+                        .clickable { navController.navigate("chat/${match.id}") }
                 ) {
                     Image(
                         painter = painterResource(id = match.profileImageRes),
@@ -86,6 +105,7 @@ fun MatchesScreen(navController: NavController) {
         }
     }
 }
+
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun ChatScreen(navController: NavController, matchId: String) {
@@ -101,7 +121,7 @@ fun ChatScreen(navController: NavController, matchId: String) {
                 title = { Text("Chat with ${match.name}") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -136,20 +156,23 @@ fun ChatScreen(navController: NavController, matchId: String) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .pointerInput(Unit) {
+                    detectHorizontalDragGestures { _, dragAmount ->
+                        if (dragAmount > 50) {
+                            navController.navigate("home")
+                        }
+                    }
+                }
         ) {
             // Profile Header
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     painter = painterResource(id = match.profileImageRes),
                     contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(CircleShape)
+                    modifier = Modifier.size(80.dp).clip(CircleShape)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = "Matched with ${match.name}", style = MaterialTheme.typography.titleMedium)
@@ -157,9 +180,7 @@ fun ChatScreen(navController: NavController, matchId: String) {
             }
 
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 8.dp),
+                modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
                 reverseLayout = true
             ) {
                 items(messages.reversed()) { message ->
