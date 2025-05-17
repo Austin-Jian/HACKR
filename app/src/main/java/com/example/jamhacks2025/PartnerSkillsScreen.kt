@@ -35,7 +35,7 @@ fun PartnerSkillsScreen(navController: NavController) {
         Text(
             text = "What are \nyou looking for?",
             style = MaterialTheme.typography.displayLarge,
-            color = Color(0xfff2f3d9),
+            color = Color(0xFF151E3F),
             fontSize = 50.sp,
             modifier = Modifier.offset(y = 170.dp, x=40.dp)
         )
