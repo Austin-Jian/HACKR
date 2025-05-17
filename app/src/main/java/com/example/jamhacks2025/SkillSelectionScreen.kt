@@ -35,7 +35,7 @@ fun SkillSelectionScreen(navController: NavController) {
         Text(
             text = "Choose \nyour skills",
             style = MaterialTheme.typography.displayLarge,
-            color = Color(0xfff2f3d9),
+            color = Color(0xFF151E3F),
             fontSize = 50.sp,
             modifier = Modifier.offset(y = 200.dp, x = -15.dp)
         )
