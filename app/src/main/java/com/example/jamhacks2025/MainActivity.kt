@@ -16,7 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,6 +29,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.jamhacks2025.ui.theme.JamHacks2025Theme
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Color
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalDensity
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
@@ -45,6 +53,9 @@ class MainActivity : ComponentActivity() {
                     composable("matches") {
                         MatchesScreen(navController)
                     }
+                    composable("swipe") {
+                        SwipeScreen(navController)
+                    }
                     composable("chat/{matchId}") { backStackEntry ->
                         val matchId = backStackEntry.arguments?.getString("matchId") ?: ""
                         ChatScreen(navController, matchId)
@@ -55,6 +66,111 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SwipeScreen(navController: NavController) {
+    val profiles = remember { FakeChatBackend.matches.toMutableStateList() }
+    var currentIndex by remember { mutableStateOf(0) }
+    val scope = rememberCoroutineScope()
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Find Teammates") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
+    ) { innerPadding ->
+        if (currentIndex >= profiles.size) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("No more profiles!", style = MaterialTheme.typography.titleLarge)
+            }
+        } else {
+            val profile = profiles[currentIndex]
+            val offsetX = remember { Animatable(0f) }
+            val screenWidth = with(LocalDensity.current) { 300.dp.toPx() } // Customize as needed
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    shadowElevation = 8.dp,
+                    color = MaterialTheme.colorScheme.surface,
+                    modifier = Modifier
+                        .fillMaxWidth(0.85f)
+                        .aspectRatio(0.75f)
+                        .offset { IntOffset(offsetX.value.toInt(), 0) }
+                        .rotate(offsetX.value / 60) // Slight rotation effect
+                        .pointerInput(Unit) {
+                            detectHorizontalDragGestures(
+                                onDragEnd = {
+                                    scope.launch {
+                                        if (offsetX.value > screenWidth / 3) {
+                                            offsetX.animateTo(screenWidth, tween(300))
+                                            delay(200) // Delay before moving to next profile
+                                            offsetX.snapTo(0f)
+                                            currentIndex++
+                                        } else if (offsetX.value < -screenWidth / 3) {
+                                            offsetX.animateTo(-screenWidth, tween(300))
+                                            delay(200)
+                                            offsetX.snapTo(0f)
+                                            currentIndex++
+                                        } else {
+                                            offsetX.animateTo(0f, tween(300)) // Snap back if not enough swipe
+                                        }
+                                    }
+                                },
+                                onHorizontalDrag = { _, dragAmount ->
+                                    scope.launch {
+                                        offsetX.snapTo(offsetX.value + dragAmount)
+                                    }
+                                }
+                            )
+                        }
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = profile.profileImageRes),
+                            contentDescription = "Profile Picture",
+                            modifier = Modifier
+                                .size(150.dp)
+                                .clip(CircleShape)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(text = profile.name, style = MaterialTheme.typography.headlineSmall)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Swipe → Accept | Swipe ← Reject",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Gray
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
