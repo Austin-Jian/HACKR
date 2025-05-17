@@ -1,22 +1,28 @@
 package com.example.jamhacks2025
-
+import androidx.compose.material3.ExperimentalMaterial3Api
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.jamhacks2025.ui.theme.JamHacks2025Theme
 
 class MainActivity : ComponentActivity() {
@@ -25,21 +31,81 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             JamHacks2025Theme {
-                ChatScreen(matchId = "match_1") // Load fake chat for match_1
+                val navController = rememberNavController()
+                NavHost(navController, startDestination = "matches") {
+                    composable("matches") {
+                        MatchesScreen(navController)
+                    }
+                    composable("chat/{matchId}") { backStackEntry ->
+                        val matchId = backStackEntry.arguments?.getString("matchId") ?: ""
+                        ChatScreen(navController, matchId)
+                    }
+                }
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(matchId: String) {
+fun MatchesScreen(navController: NavController) {
+    val matches = FakeChatBackend.matches
+
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Your Matches") })
+        }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp)
+        ) {
+            items(matches) { match ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .clickable {
+                            navController.navigate("chat/${match.id}")
+                        }
+                ) {
+                    Image(
+                        painter = painterResource(id = match.profileImageRes),
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .size(60.dp)
+                            .clip(CircleShape)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(text = match.name, style = MaterialTheme.typography.titleMedium)
+                }
+            }
+        }
+    }
+}
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+fun ChatScreen(navController: NavController, matchId: String) {
+    val match = FakeChatBackend.getMatchById(matchId) ?: return
     var messageText by remember { mutableStateOf("") }
     val messages = remember { mutableStateListOf<Message>().apply {
         addAll(FakeChatBackend.getMessages(matchId))
     } }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = { Text("Chat with ${match.name}") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        },
         bottomBar = {
             Row(
                 modifier = Modifier
@@ -79,18 +145,17 @@ fun ChatScreen(matchId: String) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.placeholder_profile), // Replace with your image
+                    painter = painterResource(id = match.profileImageRes),
                     contentDescription = "Profile Picture",
                     modifier = Modifier
                         .size(80.dp)
                         .clip(CircleShape)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Matched with Alex", style = MaterialTheme.typography.titleMedium)
+                Text(text = "Matched with ${match.name}", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // Chat Messages
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
