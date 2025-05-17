@@ -41,7 +41,9 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
         ) {
             IconButton(
                 onClick = { navController.popBackStack() },
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier
+                    .size(40.dp)
+                    .offset(x=24.dp, y=60.dp)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.arrow),
@@ -57,11 +59,13 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
             Text(
                 text = "Chat with $profileName",
                 color = Color(0xff151e3f),
-                style = MaterialTheme.typography.headlineSmall
+                style = MaterialTheme.typography.displayLarge,
+                fontSize = 28.sp,
+                modifier = Modifier.offset(x = 20.dp, y=60.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(80.dp))
 
         Image(
             painter = painterResource(id = imageResId),
@@ -78,8 +82,11 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
             text = "$profileName seems to be a great fit for your team!",
             color = Color(0xfff2f3d9),
             textAlign = TextAlign.Center,
-            style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Medium),
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(start = 24.dp, end = 24.dp)
+                .offset(y=12.dp)
         )
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -102,8 +109,9 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp)
-                .background(Color(0xfff2f3d9), RoundedCornerShape(50.dp))
+                .padding(start = 24.dp, end = 24.dp)
+                .padding(bottom = 60.dp)
+                .background(Color(0xfff2f3d9), RoundedCornerShape(10.dp))
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             TextField(
@@ -134,7 +142,7 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
                     }
                 },
                 modifier = Modifier
-                    .offset(x = (-16).dp)
+                    .offset(x = 0.dp)
                     .size(48.dp)
                     .background(Color(0xffc16e70), CircleShape)
             ) {
@@ -142,7 +150,7 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
                     painter = painterResource(id = R.drawable.vector),
                     contentDescription = "Send",
                     modifier = Modifier
-                        .size(24.dp)
+                        .size(20.dp)
                         .rotate(0f), // Rotates the arrow by 90 degrees to point upward
                     colorFilter = ColorFilter.tint(Color(0xfff2f3d9)) // Optional: Tint the arrow color
                 )
@@ -156,7 +164,8 @@ fun MessageBubble(content: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
+            .padding(end=12.dp),
         horizontalArrangement = Arrangement.End
     ) {
         Surface(
