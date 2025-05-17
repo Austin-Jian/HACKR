@@ -28,6 +28,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.jamhacks2025.ui.theme.JamHacks2025Theme
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Color
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,6 +49,9 @@ class MainActivity : ComponentActivity() {
                     composable("matches") {
                         MatchesScreen(navController)
                     }
+                    composable("swipe") {
+                        SwipeScreen(navController)
+                    }
                     composable("chat/{matchId}") { backStackEntry ->
                         val matchId = backStackEntry.arguments?.getString("matchId") ?: ""
                         ChatScreen(navController, matchId)
@@ -56,6 +62,106 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SwipeScreen(navController: NavController) {
+    val profiles = remember { FakeChatBackend.matches.toMutableStateList() }
+    var currentIndex by remember { mutableStateOf(0) }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Find Teammates") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
+    ) { innerPadding ->
+        if (currentIndex >= profiles.size) {
+            // All profiles viewed
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("No more profiles!", style = MaterialTheme.typography.titleLarge)
+            }
+        } else {
+            val profile = profiles[currentIndex]
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Profile Card
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    shadowElevation = 8.dp,
+                    color = MaterialTheme.colorScheme.surface,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .pointerInput(Unit) {
+                            detectHorizontalDragGestures { _, dragAmount ->
+                                if (dragAmount > 100) {
+                                    currentIndex++ // Swiped Right - Accept
+                                } else if (dragAmount < -100) {
+                                    currentIndex++ // Swiped Left - Reject
+                                }
+                            }
+                        }
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = profile.profileImageRes),
+                            contentDescription = "Profile Picture",
+                            modifier = Modifier
+                                .size(150.dp)
+                                .clip(CircleShape)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(text = profile.name, style = MaterialTheme.typography.headlineSmall)
+                    }
+                }
+
+                // Accept / Reject Buttons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Button(
+                        onClick = { currentIndex++ }, // Reject
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE57373))
+                    ) {
+                        Text("Reject")
+                    }
+                    Button(
+                        onClick = { currentIndex++ }, // Accept
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF81C784))
+                    ) {
+                        Text("Accept")
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -93,7 +93,7 @@ fun HomeScreen(navController: NavController) {
                             )
                         }
                         item {
-                            IconButton(onClick = { navController.navigate("matches") }) {
+                            IconButton(onClick = { navController.navigate("swipe") }) {
                                 Icon(
                                     imageVector = Icons.Filled.ArrowForward,
                                     contentDescription = "Keep Matching",
