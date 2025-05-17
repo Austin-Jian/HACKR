@@ -121,15 +121,19 @@ fun HomeScreen(navController: NavController) {
             // Resume a Chat Button
             Button(
                 onClick = { navController.navigate("chat_list") },
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF5F5DC)),
-                modifier = Modifier.fillMaxWidth().height(50.dp)
+                shape = RoundedCornerShape(10.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xfff2f3d9)),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(bottom = 28.dp)
+                    .fillMaxWidth(0.8f)
+                    .height(60.dp)
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = "Resume a chat",
+                        style = MaterialTheme.typography.bodyLarge,
                         color = Color(0xFFD9A57C),
-                        fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Icon(Icons.Filled.ArrowForward, contentDescription = "Resume", tint = Color(0xFFD9A57C))
