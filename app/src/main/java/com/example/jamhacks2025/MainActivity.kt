@@ -37,7 +37,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalDensity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
+import androidx.compose.material.icons.filled.ArrowBack
+import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,6 +67,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SwipeScreen(navController: NavController) {
@@ -78,7 +80,7 @@ fun SwipeScreen(navController: NavController) {
                 title = { Text("Find Teammates") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -111,8 +113,7 @@ fun SwipeScreen(navController: NavController) {
                     modifier = Modifier
                         .fillMaxWidth(0.85f)
                         .aspectRatio(0.75f)
-                        .offset { IntOffset(offsetX.value.toInt(), 0) }
-                        .rotate(offsetX.value / 60)
+                        .offset { IntOffset(offsetX.value.roundToInt(), 0) }
                         .pointerInput(profile) {
                             detectHorizontalDragGestures(
                                 onDragEnd = {
@@ -121,6 +122,7 @@ fun SwipeScreen(navController: NavController) {
                                             offsetX.value > screenWidth / 3 -> {
                                                 offsetX.animateTo(screenWidth, tween(300))
                                                 delay(200)
+                                                userSwipes.add(profile.name)
                                                 profiles.remove(profile)
                                             }
                                             offsetX.value < -screenWidth / 3 -> {
@@ -135,7 +137,9 @@ fun SwipeScreen(navController: NavController) {
                                     }
                                 },
                                 onHorizontalDrag = { _, dragAmount ->
-                                    scope.launch { offsetX.snapTo(offsetX.value + dragAmount) }
+                                    scope.launch {
+                                        offsetX.snapTo(offsetX.value + dragAmount)
+                                    }
                                 }
                             )
                         }
@@ -156,6 +160,16 @@ fun SwipeScreen(navController: NavController) {
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(text = profile.name, style = MaterialTheme.typography.headlineSmall)
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        if (swipeStatus[profile.name] == true) {
+                            Text(
+                                text = "${profile.name} is interested in joining your team!",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.Green
+                            )
+                        }
+
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = "Swipe → Accept | Swipe ← Reject",

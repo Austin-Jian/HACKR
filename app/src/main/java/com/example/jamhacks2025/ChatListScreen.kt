@@ -1,7 +1,8 @@
 package com.example.jamhacks2025
-import androidx.navigation.compose.rememberNavController
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,17 +11,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.foundation.clickable
-import androidx.navigation.NavController
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBar
 
 data class ChatProfile(val name: String, val imageResId: Int)
 
@@ -60,7 +61,11 @@ fun ChatListScreen(navController: NavController, modifier: Modifier = Modifier) 
                 .align(Alignment.TopStart)
                 .padding(top = 180.dp, start = 20.dp, end = 20.dp)
         ) {
-            items(sampleProfiles) { profile ->
+            val matches = sampleProfiles.filter { profile ->
+                swipeStatus[profile.name] == true && userSwipes.contains(profile.name)
+            }
+
+            items(matches) { profile ->
                 ChatProfileItem(profile, navController)
             }
         }
@@ -95,12 +100,4 @@ fun ChatProfileItem(profile: ChatProfile, navController: NavController) {
             )
         )
     }
-}
-
-
-@Preview(widthDp = 412, heightDp = 917)
-@Composable
-private fun ChatListScreenPreview() {
-    val fakeNavController = rememberNavController()
-    ChatListScreen(fakeNavController)
 }
