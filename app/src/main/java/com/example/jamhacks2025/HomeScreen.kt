@@ -49,6 +49,7 @@ fun HomeScreen(navController: NavController) {
                 Text(
                     text = "HACKR",
                     style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
                     modifier = Modifier.offset(x=36.dp, y=56.dp),
                     color = Color(0xFFFFF0D5) // Light cream text color
