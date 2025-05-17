@@ -4,7 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -98,7 +97,7 @@ fun HomeScreen(navController: NavController) {
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        listOf("frontend", "software", "C#", "design").forEach { skill ->
+                        UserManager.partnerSkills.forEach { skill ->
                             StaticSkillChip(label = skill)
                         }
 
@@ -147,18 +146,17 @@ fun StaticSkillChip(label: String) {
     Surface(
         shape = RoundedCornerShape(50),
         color = Color.Transparent,
-        border = BorderStroke(1.dp, Color(0xFFD9A57C)), // Light Brown Border
+        border = BorderStroke(1.dp, Color(0xFFD9A57C)),
         modifier = Modifier.height(32.dp)
     ) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier.padding(horizontal = 12.dp)
         ) {
-            Text(text = label, color = Color(0xFFD9A57C), fontSize = 12.sp) // Text is now visible
+            Text(text = label, color = Color(0xFFD9A57C), fontSize = 12.sp)
         }
     }
 }
-
 
 @Composable
 fun SectionCard(

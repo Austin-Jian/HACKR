@@ -61,18 +61,19 @@ fun PartnerSkillsScreen(navController: NavController) {
         }
         Button(
             onClick = {
+                UserManager.partnerSkills = selectedCategories.toList() // Save the selected preferences
                 navController.navigate("home")
             },
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xfff2f3d9)),
             modifier = Modifier
-                //.align(Alignment.BottomCenter)
                 .padding(bottom = 50.dp)
                 .fillMaxWidth(0.8f)
                 .height(60.dp)
         ) {
             Text("Find a hacker!", style = MaterialTheme.typography.bodyLarge, color = Color(0xffdc9e82))
         }
+
 
     }
 }
@@ -99,5 +100,3 @@ fun SkillChi(
         Text(text, color = textColor)
     }
 }
-
-
