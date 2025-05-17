@@ -18,11 +18,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
-    Scaffold { innerPadding ->
+    Scaffold(
+        containerColor = Color(0xFFC27575), // Full background color
+        contentColor = Color.White
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -34,18 +40,18 @@ fun HomeScreen(navController: NavController) {
                 Text(
                     text = "app name",
                     style = MaterialTheme.typography.labelLarge,
-                    color = Color.White
+                    color = Color(0xFFFFF0D5) // Light cream text color
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "Hi Oliver,",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    color = Color(0xFFFFF0D5)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Filters (Just placeholders here)
+                // Filters Section
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     listOf("backend", "backend", "abc").forEach { label ->
                         AssistChip(label = label)
@@ -57,7 +63,7 @@ fun HomeScreen(navController: NavController) {
                 // Your Team Section
                 SectionCard(title = "Your Team", count = "3/4") {
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        repeat(2) { // Hardcoded team members for demo
+                        repeat(2) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Box(
                                     modifier = Modifier
@@ -74,8 +80,8 @@ fun HomeScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Keep Matching Section
-                SectionCard(title = "Keep Matching") {
+                // Keep Looking Section
+                SectionCard(title = "Keep Looking") {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
                         items(2) {
                             Box(
@@ -86,14 +92,14 @@ fun HomeScreen(navController: NavController) {
                             )
                         }
                         item {
-                            IconButton(onClick = {
-                                // Navigate to Matches screen
-                                navController.navigate("matches")
-                            }) {
+                            IconButton(onClick = { navController.navigate("matches") }) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                                    imageVector = Icons.Filled.ArrowForward,
                                     contentDescription = "Keep Matching",
-                                    tint = Color.Black
+                                    tint = Color(0xFF1D1D1B),
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .background(Color(0xFFF5F5DC), CircleShape)
                                 )
                             }
                         }
@@ -105,10 +111,18 @@ fun HomeScreen(navController: NavController) {
             Button(
                 onClick = { navController.navigate("matches") },
                 shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD9A57C)),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF5F5DC)),
                 modifier = Modifier.fillMaxWidth().height(50.dp)
             ) {
-                Text(text = "Resume a chat", color = Color.Black)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Resume a chat",
+                        color = Color(0xFFD9A57C),
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(Icons.Filled.ArrowForward, contentDescription = "Resume", tint = Color(0xFFD9A57C))
+                }
             }
         }
     }
@@ -119,13 +133,13 @@ fun AssistChip(label: String) {
     Surface(
         shape = RoundedCornerShape(50),
         color = Color.Transparent,
-        border = BorderStroke(1.dp, Color.White),
+        border = BorderStroke(1.dp, Color(0xFFFFF0D5)),
         modifier = Modifier
             .height(32.dp)
             .padding(end = 8.dp)
     ) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 12.dp)) {
-            Text(text = label, color = Color.White, fontSize = 12.sp)
+            Text(text = label, color = Color(0xFFFFF0D5), fontSize = 12.sp)
         }
     }
 }
@@ -142,7 +156,12 @@ fun SectionCard(title: String, count: String = "", content: @Composable () -> Un
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = title, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color.Black)
+                Text(
+                    text = title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = Color.Black
+                )
                 if (count.isNotEmpty()) {
                     Text(text = count, fontWeight = FontWeight.Bold, color = Color.Black)
                 }
