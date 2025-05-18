@@ -4,6 +4,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Image
+import coil.compose.rememberAsyncImagePainter
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -15,17 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.Image
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.material3.Text
-
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -49,46 +48,58 @@ fun HomeScreen(navController: NavController) {
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                Text(
-                    text = "HACKR",
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = Color(0xFFFFF0D5),
-                    modifier = Modifier.offset(x = 36.dp, y = 56.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                ) {
+                    Text(
+                        text = "HACKR",
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        color = Color(0xFFFFF0D5),
+                        modifier = Modifier.align(Alignment.CenterStart)
+                    )
+
+                    UserManager.profilePhotoUri?.let { uri ->
+                        Image(
+                            painter = rememberAsyncImagePainter(uri),
+                            contentDescription = "Profile Picture",
+                            modifier = Modifier
+                                .size(60.dp)
+                                .clip(CircleShape)
+                                .align(Alignment.TopEnd),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
+
                 Text(
                     text = "Hi ${UserManager.userName},",
                     fontSize = 50.sp,
                     style = MaterialTheme.typography.displayLarge,
                     color = Color(0xFF151E3F),
-                    modifier = Modifier
-                        .offset(x = 36.dp, y = 60.dp)
-                        .padding(end = 36.dp)
+                    modifier = Modifier.padding(vertical = 16.dp)
                 )
-                Spacer(modifier = Modifier.height(80.dp))
 
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.offset(x = 36.dp)
+                    modifier = Modifier.padding(bottom = 24.dp)
                 ) {
-
                     UserManager.skills.forEach { skill ->
                         StaticSkillChip(color1 = Color(0xFFFFF0D5), label = skill)
                     }
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
-
                 SectionCard(
                     title = "Your Team",
                     count = "${TeamManager.teamMembers.size + 1}/4",
-                    modifier = Modifier.padding(start = 32.dp, end = 32.dp)
+                    modifier = Modifier.padding(horizontal = 32.dp)
                 ) {
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-
-
                         TeamManager.teamMembers.forEach { (name, imageResId) ->
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Image(
@@ -111,7 +122,7 @@ fun HomeScreen(navController: NavController) {
 
                 SectionCard(
                     title = "Find a Hacker",
-                    modifier = Modifier.padding(start = 32.dp, end = 32.dp)
+                    modifier = Modifier.padding(horizontal = 32.dp)
                 ) {
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -124,7 +135,6 @@ fun HomeScreen(navController: NavController) {
                     }
 
                     if (TeamManager.teamMembers.size < 3) {
-                        // Team not full, show navigation button
                         IconButton(
                             onClick = { navController.navigate("swipe") },
                             modifier = Modifier
@@ -139,7 +149,6 @@ fun HomeScreen(navController: NavController) {
                             )
                         }
                     } else {
-                        // Team is full, show message instead of button
                         Text(
                             text = "Team is Full!",
                             color = Color(0xFF151E3F),
@@ -150,7 +159,6 @@ fun HomeScreen(navController: NavController) {
                         )
                     }
                 }
-
             }
 
             Button(
