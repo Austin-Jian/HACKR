@@ -1,5 +1,6 @@
 package com.example.jamhacks2025
 import java.io.File
+import androidx.compose.ui.layout.ContentScale
 import androidx.core.content.FileProvider
 import androidx.compose.foundation.background
 import androidx.compose.foundation.Image
@@ -100,7 +101,8 @@ fun AndroidCompact2(modifier: Modifier = Modifier, navController: NavController?
                 Image(
                     painter = rememberAsyncImagePainter(selectedImageUri),
                     contentDescription = "Selected Profile Image",
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
                 )
             } else {
                 Text("+", color = Color(0xff151e3f), fontSize = 48.sp, fontWeight = FontWeight.Bold)

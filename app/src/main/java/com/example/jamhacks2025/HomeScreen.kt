@@ -59,7 +59,9 @@ fun HomeScreen(navController: NavController) {
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
                         color = Color(0xFFFFF0D5),
-                        modifier = Modifier.align(Alignment.CenterStart)
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .padding(start = 30.dp, top = 20.dp)
                     )
 
                     UserManager.profilePhotoUri?.let { uri ->
@@ -68,8 +70,9 @@ fun HomeScreen(navController: NavController) {
                             contentDescription = "Profile Picture",
                             modifier = Modifier
                                 .size(60.dp)
-                                .clip(CircleShape)
-                                .align(Alignment.TopEnd),
+                                .align(Alignment.TopCenter)
+                                .offset(x = 120.dp)
+                                .clip(CircleShape), // Adds some padding to the right and top
                             contentScale = ContentScale.Crop
                         )
                     }
@@ -82,12 +85,16 @@ fun HomeScreen(navController: NavController) {
                     fontSize = 50.sp,
                     style = MaterialTheme.typography.displayLarge,
                     color = Color(0xFF151E3F),
-                    modifier = Modifier.padding(vertical = 16.dp)
+                    modifier = Modifier
+                        .padding(vertical = 16.dp)
+                        .padding(start = 30.dp)
                 )
 
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(bottom = 24.dp)
+                    modifier = Modifier
+                        .padding(bottom = 24.dp)
+                        .padding(start = 30.dp)
                 ) {
                     UserManager.skills.forEach { skill ->
                         StaticSkillChip(color1 = Color(0xFFFFF0D5), label = skill)
@@ -173,7 +180,7 @@ fun HomeScreen(navController: NavController) {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "Resume a chat",
+                        text = "Your Chats",
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color(0xFFD9A57C)
                     )
