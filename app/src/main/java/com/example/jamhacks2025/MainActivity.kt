@@ -40,7 +40,10 @@ import kotlinx.coroutines.launch
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
-
+val possibleSkills = listOf("frontend", "backend", "hardware", "software", "C#", "design", "python")
+val profileSkills = sampleProfiles.associate { profile ->
+    profile.name to possibleSkills.shuffled().take((1..3).random())
+}
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,9 +80,12 @@ val permanentlySwipedProfiles = mutableSetOf<String>()
 fun SwipeScreen(navController: NavController) {
     val scope = rememberCoroutineScope()
 
-    // Always filter profiles based on the permanent swiped set
     val profiles = remember {
-        sampleProfiles.filter { it.name !in permanentlySwipedProfiles }.toMutableStateList()
+        sampleProfiles.filter { profile ->
+            profile.name !in permanentlySwipedProfiles &&
+                    (UserManager.partnerSkills.isEmpty() ||
+                            profileSkills[profile.name]?.any { it in UserManager.partnerSkills } == true)
+        }.toMutableStateList()
     }
 
     Scaffold(
@@ -96,9 +102,7 @@ fun SwipeScreen(navController: NavController) {
     ) { innerPadding ->
         if (profiles.isEmpty()) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
+                modifier = Modifier.fillMaxSize().padding(innerPadding),
                 contentAlignment = Alignment.Center
             ) {
                 Text("No more profiles!", style = MaterialTheme.typography.titleLarge)
@@ -109,9 +113,7 @@ fun SwipeScreen(navController: NavController) {
             val screenWidth = with(LocalDensity.current) { 300.dp.toPx() }
 
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
+                modifier = Modifier.fillMaxSize().padding(innerPadding),
                 contentAlignment = Alignment.Center
             ) {
                 Surface(
@@ -130,11 +132,9 @@ fun SwipeScreen(navController: NavController) {
                                             offsetX.value > screenWidth / 3 -> {
                                                 offsetX.animateTo(screenWidth, tween(300))
                                                 delay(200)
-
                                                 userSwipes.add(profile.name)
-                                                permanentlySwipedProfiles.add(profile.name) // 👈 Prevent profile from returning
+                                                permanentlySwipedProfiles.add(profile.name)
                                                 profiles.remove(profile)
-
                                                 if (swipeStatus[profile.name] == true) {
                                                     navController.navigate("chat_dm/${profile.name}/${profile.imageResId}")
                                                 }
@@ -142,8 +142,7 @@ fun SwipeScreen(navController: NavController) {
                                             offsetX.value < -screenWidth / 3 -> {
                                                 offsetX.animateTo(-screenWidth, tween(300))
                                                 delay(200)
-
-                                                permanentlySwipedProfiles.add(profile.name) // 👈 Add to permanent removal list
+                                                permanentlySwipedProfiles.add(profile.name)
                                                 profiles.remove(profile)
                                             }
                                             else -> {
@@ -153,9 +152,7 @@ fun SwipeScreen(navController: NavController) {
                                     }
                                 },
                                 onHorizontalDrag = { _, dragAmount ->
-                                    scope.launch {
-                                        offsetX.snapTo(offsetX.value + dragAmount)
-                                    }
+                                    scope.launch { offsetX.snapTo(offsetX.value + dragAmount) }
                                 }
                             )
                         }
@@ -163,9 +160,7 @@ fun SwipeScreen(navController: NavController) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
+                        modifier = Modifier.fillMaxSize().padding(16.dp)
                     ) {
                         Image(
                             painter = painterResource(id = profile.imageResId),
@@ -176,7 +171,16 @@ fun SwipeScreen(navController: NavController) {
                         Text(text = profile.name, style = MaterialTheme.typography.headlineSmall)
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // If they swiped us, ts what we see
+                        // 🎯 New: Display Character Skills
+                        Text(
+                            text = "Skills: ${profileSkills[profile.name]?.joinToString(", ")}",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.DarkGray,
+                            fontSize = 12.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
                         if (swipeStatus[profile.name] == true) {
                             Text(
                                 text = "${profile.name} is interested in joining your team!",
