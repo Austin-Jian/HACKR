@@ -33,12 +33,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalDensity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import kotlin.math.roundToInt
 val possibleSkills = listOf("frontend", "backend", "hardware", "software", "C#", "design", "python")
 val profileSkills = sampleProfiles.associate { profile ->
@@ -58,7 +63,7 @@ class MainActivity : ComponentActivity() {
                     composable("home") { HomeScreen(navController) }
                     composable("swipe") { SwipeScreen(navController) }
                     composable("chat_list") { ChatListScreen(navController) }
-                    // ✅ New Chat List Screen
+
                     composable("chat_dm/{profileName}/{imageResId}") { backStackEntry ->
                         val profileName = backStackEntry.arguments?.getString("profileName") ?: ""
                         val imageResId = backStackEntry.arguments?.getString("imageResId")?.toInt() ?: 0
@@ -88,24 +93,52 @@ fun SwipeScreen(navController: NavController) {
         }.toMutableStateList()
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Find Teammates") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xffc16e70))
+            .padding(top = 24.dp) // Adjust padding as needed
+    ) {
+        // Custom Top Bar using a Row
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp) // Add horizontal padding if needed
+        ) {
+            // Back Button
+            IconButton(onClick = { navController.popBackStack() },
+                modifier = Modifier
+                    .size(40.dp)
+                    .offset(x=24.dp, y=60.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.arrow),  // Replace with your back icon
+                    contentDescription = "Back",
+                    modifier = Modifier.size(24.dp).rotate(180f),
+                    tint = Color(0xff151e3f) // Set icon color
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Title Text
+            Text(
+                text = "Find Teammates",
+                color = Color(0xff151e3f),
+                style = MaterialTheme.typography.displayLarge,
+                fontSize = 24.sp,
+                modifier = Modifier.offset(x = 20.dp, y=60.dp)
             )
         }
-    ) { innerPadding ->
+
+        // Main Content
         if (profiles.isEmpty()) {
             Box(
-                modifier = Modifier.fillMaxSize().padding(innerPadding),
+                modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Text("No more profiles!", style = MaterialTheme.typography.titleLarge)
+                Text("No more profiles!", style = MaterialTheme.typography.displayMedium, color = Color(0xff151e3f),)
             }
         } else {
             val profile = profiles.first()
@@ -113,13 +146,12 @@ fun SwipeScreen(navController: NavController) {
             val screenWidth = with(LocalDensity.current) { 300.dp.toPx() }
 
             Box(
-                modifier = Modifier.fillMaxSize().padding(innerPadding),
+                modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Surface(
                     shape = RoundedCornerShape(16.dp),
-                    shadowElevation = 8.dp,
-                    color = MaterialTheme.colorScheme.surface,
+                    color = Color(0xfff2f3d9),
                     modifier = Modifier
                         .fillMaxWidth(0.85f)
                         .aspectRatio(0.75f)
@@ -159,43 +191,42 @@ fun SwipeScreen(navController: NavController) {
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxSize().padding(16.dp)
+                        modifier = Modifier.fillMaxSize().padding(60.dp)
                     ) {
                         Image(
                             painter = painterResource(id = profile.imageResId),
                             contentDescription = "Profile Picture",
-                            modifier = Modifier.size(150.dp).clip(CircleShape)
+                            modifier = Modifier
+                                .size(150.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        Text(text = profile.name, style = MaterialTheme.typography.headlineSmall)
+                        Text(text = profile.name, style = MaterialTheme.typography.displayLarge, fontSize = 25.sp, color = Color(0xffdc9e82))
                         Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
 
-                        // 🎯 New: Display Character Skills
-                        Text(
-                            text = "Skills: ${profileSkills[profile.name]?.joinToString(", ")}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.DarkGray,
-                            fontSize = 12.sp
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        if (swipeStatus[profile.name] == true) {
-                            Text(
-                                text = "${profile.name} is interested in joining your team!",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color.Green,
-                                fontSize = 12.sp
-                            )
+                            modifier = Modifier
+                                .padding(bottom = 24.dp, top = 12.dp)
+                                //.padding(start = 30.dp)
+                                .zIndex(1f),
+                        ) {
+                            // Display skills as chips for the current profile
+                            profileSkills[profile.name]?.forEach { skill ->
+                                StaticSkillChi(
+                                    color1 = Color(0xffc16e70), // Custom color for chips
+                                    label = skill
+                                )
+                            }
                         }
-
-                        Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Swipe → Accept | Swipe ← Reject",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray,
-                            fontSize = 12.sp
+                            text = "Swipe right if interested or left if you want to keep looking",
+                            color = Color(0xff151e3f),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier
+                                .zIndex(1f)
                         )
                     }
                 }
@@ -204,172 +235,20 @@ fun SwipeScreen(navController: NavController) {
     }
 }
 
-
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MatchesScreen(navController: NavController) {
-    val currentUserId = "user_1" // Hardcoded for now, or dynamically retrieved later
-    val matches = FakeChatBackend.getMatchesForUser(currentUserId)
-
-    Scaffold(
-        topBar = { TopAppBar(
-            title = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    /*Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Swipe Hint",
-                        modifier = Modifier.size(20.dp)
-                    )*/
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Your Matches")
-                }
-            }
-        )
-        }
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
-                .pointerInput(Unit) {
-                    detectHorizontalDragGestures { _, dragAmount ->
-                        if (dragAmount > 50) {
-                            navController.navigate("home")
-                        }
-                    }
-                }
-        ) {
-            items(matches) { match ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable { navController.navigate("chat/${match.id}") }
-                ) {
-                    Image(
-                        painter = painterResource(id = match.profileImageRes),
-                        contentDescription = "Profile Picture",
-                        modifier = Modifier
-                            .size(60.dp)
-                            .clip(CircleShape)
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(text = match.name, style = MaterialTheme.typography.titleMedium)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-fun ChatScreen(navController: NavController, matchId: String) {
-    val match = FakeChatBackend.getMatchById(matchId) ?: return
-    var messageText by remember { mutableStateOf("") }
-    val messages = remember { mutableStateListOf<Message>().apply {
-        addAll(FakeChatBackend.getMessages(matchId))
-    } }
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Chat with ${match.name}") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        /*Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")*/
-                    }
-                }
-            )
-        },
-        bottomBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextField(
-                    value = messageText,
-                    onValueChange = { messageText = it },
-                    modifier = Modifier.weight(1f),
-                    placeholder = { Text("Type a message...") }
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(onClick = {
-                    if (messageText.isNotBlank()) {
-                        FakeChatBackend.sendMessage(matchId, messageText.trim())
-                        messages.add(Message("Me", messageText.trim(), "Now"))
-                        messageText = ""
-                    }
-                }) {
-                    Text("Send")
-                }
-            }
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .pointerInput(Unit) {
-                    detectHorizontalDragGestures { _, dragAmount ->
-                        if (dragAmount > 50) {
-                            navController.navigate("home")
-                        }
-                    }
-                }
-        ) {
-            // Profile Header
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painter = painterResource(id = match.profileImageRes),
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier.size(80.dp).clip(CircleShape)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Matched with ${match.name}", style = MaterialTheme.typography.titleMedium)
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
-                reverseLayout = true
-            ) {
-                items(messages.reversed()) { message ->
-                    MessageBubble(message)
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun MessageBubble(message: Message) {
-    val bubbleColor = if (message.sender == "Me")
-        MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
-    else
-        MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = if (message.sender == "Me") Arrangement.End else Arrangement.Start
+fun StaticSkillChi(color1: Color, label: String) {
+    Surface(
+        shape = RoundedCornerShape(50),
+        color = Color.Transparent,
+        border = BorderStroke(1.dp, color1),
+        modifier = Modifier.height(32.dp)
     ) {
-        Surface(
-            color = bubbleColor,
-            shape = MaterialTheme.shapes.medium,
-            modifier = Modifier.padding(4.dp)
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.padding(horizontal = 12.dp)
         ) {
-            Text(
-                text = message.content,
-                modifier = Modifier.padding(12.dp)
-            )
+            Text(text = label, color = color1, fontSize = 12.sp)
         }
     }
 }
+

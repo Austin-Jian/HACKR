@@ -25,16 +25,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.foundation.clickable
 
-
 @Composable
 fun IndividualDm(navController: NavController, profileName: String, imageResId: Int) {
     var messageText by remember { mutableStateOf("") }
     val messages = remember { mutableStateListOf<String>() }
 
-    // ADDED
+    // Track if the team offer is shown
     var showTeamOffer by remember { mutableStateOf(false) }
     var responseMessage by remember { mutableStateOf("") }
-
 
     Column(
         modifier = Modifier
@@ -88,7 +86,7 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "$profileName seems to be a great fit for your team!",
+            text = "$profileName seems to be a great fit for your team! Use /invite if you end up wanting to team!",
             color = Color(0xfff2f3d9),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyLarge,
@@ -108,41 +106,45 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
                 .padding(vertical = 16.dp),
             reverseLayout = true
         ) {
+            // Regular messages
             items(messages.reversed()) { msg ->
                 MessageBubble(content = msg)
             }
-        }
 
-        if (showTeamOffer) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                Button(
-                    onClick = {
-                        showTeamOffer = false
-                        responseMessage = "You accepted the team offer!"
+            // If the team offer is being shown, render the box
+            if (showTeamOffer) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 24.dp, end = 24.dp)
+                            .background(Color(0xff151e3f), RoundedCornerShape(10.dp))
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = "You invited $profileName to your team!",
+                            color = Color(0xfff2f3d9),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(bottom = 60.dp)
+                        )
 
-                        TeamManager.addTeamMember(profileName, imageResId)
-                        navController.popBackStack("Home", inclusive = false)
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xffc16e70))
-                ) {
-                    Text("Join", color = Color(0xfff2f3d9))
-                }
-
-                Button(
-                    onClick = {
-                        showTeamOffer = false
-                        responseMessage = "You declined the team offer."
-
-                        navController.popBackStack()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xffc16e70))
-                ) {
-                    Text("Decline", color = Color(0xfff2f3d9))
+                        Button(
+                            onClick = {
+                                // Action on button press
+                                responseMessage = "You accepted the team offer!"
+                                TeamManager.addTeamMember(profileName, imageResId)
+                                navController.popBackStack("Home", inclusive = false)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xffc16e70)),
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                        ) {
+                            Text("Join Team!", color = Color(0xfff2f3d9))
+                        }
+                    }
                 }
             }
         }
@@ -158,7 +160,6 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
                     .padding(8.dp)
             )
         }
-
 
         // Input Row
         Row(
@@ -192,12 +193,12 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
             IconButton(
                 onClick = {
                     if (messageText.isNotBlank()) {
-                        messages.add(messageText)
-
-                        // ===== NEW: Check for "/invite" phrase in lowercase =====
+                        // Add message to the list
                         if (messageText.lowercase() == "/invite") {
+                            // If it's an invite, trigger the team offer without adding to messages
                             showTeamOffer = true
-                            responseMessage = "" // Clear any previous response
+                        } else {
+                            messages.add(messageText)
                         }
 
                         messageText = ""
