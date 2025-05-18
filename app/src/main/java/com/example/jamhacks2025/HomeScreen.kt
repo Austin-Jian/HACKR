@@ -21,6 +21,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.material3.Text
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -76,18 +81,27 @@ fun HomeScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                SectionCard(title = "Your Team", count = "3/4", modifier = Modifier.padding(start = 32.dp, end = 32.dp)) {
+                SectionCard(
+                    title = "Your Team",
+                    count = "${TeamManager.teamMembers.size + 1}/4",
+                    modifier = Modifier.padding(start = 32.dp, end = 32.dp)
+                ) {
                     Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        repeat(2) {
+
+
+                        TeamManager.teamMembers.forEach { (name, imageResId) ->
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Box(
+                                Image(
+                                    painter = painterResource(id = imageResId),
+                                    contentDescription = "Team Member Photo",
                                     modifier = Modifier
                                         .size(60.dp)
                                         .clip(CircleShape)
-                                        .background(Color(0xFFD9A57C))
+                                        .background(Color(0xFFD9A57C)),
+                                    contentScale = ContentScale.Crop
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
-                                Text(text = "John Doe", fontSize = 12.sp, color = Color.Black)
+                                Text(text = name, fontSize = 12.sp, color = Color.Black)
                             }
                         }
                     }
@@ -95,22 +109,22 @@ fun HomeScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                SectionCard(title = "Find a Hacker", modifier = Modifier.padding(start = 32.dp, end = 32.dp)) {
-                    // Use Box as the parent layout
-
-                        // FlowRow with skills
-                        FlowRow(
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            modifier = Modifier.padding(bottom = 10.dp) // Add bottom padding to leave space for the button
-                        ) {
-                            UserManager.partnerSkills.forEach { skill ->
-                                StaticSkillChip(color1 = Color(0xFFD9A57C), label = skill)
-                            }
-
+                SectionCard(
+                    title = "Find a Hacker",
+                    modifier = Modifier.padding(start = 32.dp, end = 32.dp)
+                ) {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.padding(bottom = 10.dp)
+                    ) {
+                        UserManager.partnerSkills.forEach { skill ->
+                            StaticSkillChip(color1 = Color(0xFFD9A57C), label = skill)
                         }
+                    }
 
-                        // Button positioned at the bottom-right corner
+                    if (TeamManager.teamMembers.size < 3) {
+                        // Team not full, show navigation button
                         IconButton(
                             onClick = { navController.navigate("swipe") },
                             modifier = Modifier
@@ -124,8 +138,19 @@ fun HomeScreen(navController: NavController) {
                                 tint = Color(0xFFF5F5DC)
                             )
                         }
-
+                    } else {
+                        // Team is full, show message instead of button
+                        Text(
+                            text = "Team is Full!",
+                            color = Color(0xFF151E3F),
+                            fontSize = 14.sp,
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .padding(end = 8.dp, top = 8.dp)
+                        )
+                    }
                 }
+
             }
 
             Button(

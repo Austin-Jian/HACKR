@@ -23,11 +23,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.compose.foundation.clickable
+
 
 @Composable
 fun IndividualDm(navController: NavController, profileName: String, imageResId: Int) {
     var messageText by remember { mutableStateOf("") }
     val messages = remember { mutableStateListOf<String>() }
+
+    // ADDED
+    var showTeamOffer by remember { mutableStateOf(false) }
+    var responseMessage by remember { mutableStateOf("") }
+
 
     Column(
         modifier = Modifier
@@ -106,6 +113,53 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
             }
         }
 
+        if (showTeamOffer) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Button(
+                    onClick = {
+                        showTeamOffer = false
+                        responseMessage = "You accepted the team offer!"
+
+                        TeamManager.addTeamMember(profileName, imageResId)
+                        navController.popBackStack("Home", inclusive = false)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xffc16e70))
+                ) {
+                    Text("Join", color = Color(0xfff2f3d9))
+                }
+
+                Button(
+                    onClick = {
+                        showTeamOffer = false
+                        responseMessage = "You declined the team offer."
+
+                        navController.popBackStack()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xffc16e70))
+                ) {
+                    Text("Decline", color = Color(0xfff2f3d9))
+                }
+            }
+        }
+
+        // ===== NEW: Response Message After Clicking Join/Decline =====
+        if (responseMessage.isNotEmpty()) {
+            Text(
+                text = responseMessage,
+                color = Color(0xfff2f3d9),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            )
+        }
+
+
         // Input Row
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -124,9 +178,9 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     disabledContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,   // Removes underline when focused
-                    unfocusedIndicatorColor = Color.Transparent, // Removes underline when unfocused
-                    disabledIndicatorColor = Color.Transparent   // Removes underline when disabled
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
                 ),
                 modifier = Modifier
                     .weight(1f)
@@ -135,11 +189,17 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
                 maxLines = 1
             )
 
-
             IconButton(
                 onClick = {
                     if (messageText.isNotBlank()) {
                         messages.add(messageText)
+
+                        // ===== NEW: Check for "/invite" phrase in lowercase =====
+                        if (messageText.lowercase() == "/invite") {
+                            showTeamOffer = true
+                            responseMessage = "" // Clear any previous response
+                        }
+
                         messageText = ""
                     }
                 },
@@ -153,8 +213,8 @@ fun IndividualDm(navController: NavController, profileName: String, imageResId: 
                     contentDescription = "Send",
                     modifier = Modifier
                         .size(20.dp)
-                        .rotate(0f), // Rotates the arrow by 90 degrees to point upward
-                    colorFilter = ColorFilter.tint(Color(0xfff2f3d9)) // Optional: Tint the arrow color
+                        .rotate(0f),
+                    colorFilter = ColorFilter.tint(Color(0xfff2f3d9))
                 )
             }
         }
